@@ -29,17 +29,17 @@ MqttClient mqtt(net);
 DHT dht(DHTPIN, DHTTYPE);
 
 // btn
-const int buttonPin = 0;
-int buttonState = 0;  
+const int photocellPin = A0;
+int photocellValue;
 
 // network
 String temperatureTopic = "itp/" + DEVICE_ID + "/temperature";
 String humidityTopic = "itp/" + DEVICE_ID + "/humidity";
-String btnTopic = "itp/" + DEVICE_ID + "/btn";
+String photocellTopic = "itp/" + DEVICE_ID + "/photocell";
 String ledTopic = "itp/" + DEVICE_ID + "/led";
 
-// Publish every 10 seconds for the workshop. Real world apps need this data every 5 or 10 minutes.
-unsigned long publishInterval = 10 * 500;
+// Publish every 5 or 10 minutes.
+unsigned long publishInterval = 600 * 500;
 unsigned long lastMillis = 0;
 
 void setup() {
@@ -54,8 +54,8 @@ void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
 
-  // btn input
-  pinMode(buttonPin, INPUT);
+  // photocell input
+  pinMode(photocellPin, INPUT);
  
   Serial.println("Connecting WiFi");
   connectWiFi();
@@ -72,12 +72,12 @@ void loop() {
   if (!mqtt.connected()) {
     connectMQTT();
   }
+
+  // update photocell value
+  photocellValue = analogRead(photocellPin); 
   
   // poll for new MQTT messages and send keep alives
   mqtt.poll();
-
-  // btn
-  buttonState = digitalRead(buttonPin);
 
   if (millis() - lastMillis > publishInterval) {
     lastMillis = millis();
@@ -89,20 +89,12 @@ void loop() {
     Serial.print("°F ");
     Serial.print(humidity);
     Serial.println("% RH");
-    Serial.print("Is btn being pressed now? ");
-    Serial.println(buttonState);
-    
-    mqtt.beginMessage(temperatureTopic);
-    mqtt.print(temperature); 
-    mqtt.endMessage();
+    Serial.print("Photocell ");
+    Serial.println(photocellValue);
 
-    mqtt.beginMessage(humidityTopic);
-    mqtt.print(humidity); 
-    mqtt.endMessage();
-
-    mqtt.beginMessage(btnTopic);
-    mqtt.print(buttonState); 
-    mqtt.endMessage();    
+    mqttAction(temperatureTopic, temperature);
+    mqttAction(humidityTopic, humidity);
+    mqttAction(photocellTopic, photocellValue);
   }  
 }
 
@@ -174,4 +166,12 @@ void printWiFiStatus() {
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
+}
+
+// helper functions
+// mqtt message 
+void mqttAction(String topic, int value) {
+  mqtt.beginMessage(topic);
+  mqtt.print(value); 
+  mqtt.endMessage();
 }
