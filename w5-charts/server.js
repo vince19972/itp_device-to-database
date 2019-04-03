@@ -19,7 +19,7 @@ const pool = new Pool({
 app.get('/device', async (req, res) => {
 	const query = `SELECT distinct device
 			FROM sensor_data
-			WHERE measurement = 'temperature'
+			WHERE measurement = 'humidity'
 			ORDER BY device`
 	console.log(query)
 
@@ -35,11 +35,11 @@ app.get('/device', async (req, res) => {
 	}
 })
 
-app.get('/device/:device/temperature', async (req, res) => {
+app.get('/device/:device/humidity', async (req, res) => {
 	const device = req.params.device
-	const query = `SELECT recorded_at, reading::float as temperature
+	const query = `SELECT recorded_at, reading::float as humidity
 			FROM sensor_data
-			WHERE measurement = 'temperature'
+			WHERE measurement = 'humidity'
 			AND device = $1`
 	const params = [device]
 	console.log(query, params)

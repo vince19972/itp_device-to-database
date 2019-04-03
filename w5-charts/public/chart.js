@@ -25,11 +25,11 @@ function onDeviceSelected(e) {
 	getChartData(device);
 }
 
-// Get temperature data from the server for the selected device
+// Get humidity data from the server for the selected device
 async function getChartData(device) {
-	const response = await fetch(`device/${device}/temperature`);
+	const response = await fetch(`device/${device}/humidity`);
 	const json = await response.json();
-	const rows = json.map(row => [new Date(row.recorded_at), row.temperature]);
+	const rows = json.map(row => [new Date(row.recorded_at), row.humidity]);
 	drawChart(rows);
 }
 
@@ -37,7 +37,7 @@ async function getChartData(device) {
 function drawChart(rows) {
 	var data = new google.visualization.DataTable();
 	data.addColumn('date', 'Date');
-	data.addColumn('number', 'Temperature');
+	data.addColumn('number', 'humidity');
 	data.addRows(rows);
 
 	var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
