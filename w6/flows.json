@@ -1,0 +1,115 @@
+[
+    {
+        "id": "67da7f7f.11b72",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f3addf52.aa347",
+        "type": "inject",
+        "z": "67da7f7f.11b72",
+        "name": "",
+        "topic": "",
+        "payload": "hello world",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5c3faa62.b5bc54",
+        "type": "debug",
+        "z": "67da7f7f.11b72",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 610,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "93d39598.f21418",
+        "type": "mqtt in",
+        "z": "67da7f7f.11b72",
+        "name": "",
+        "topic": "#",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "5dabce56.2a8c5",
+        "x": 150,
+        "y": 460,
+        "wires": [
+            [
+                "8bcc83d6.9e67e"
+            ]
+        ]
+    },
+    {
+        "id": "d9bf9576.f23d78",
+        "type": "file",
+        "z": "67da7f7f.11b72",
+        "name": "",
+        "filename": "/tmp/mqtt.log",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 620,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8bcc83d6.9e67e",
+        "type": "function",
+        "z": "67da7f7f.11b72",
+        "name": "format log message",
+        "func": "const timestamp = new Date().getTime();\n// tab separated values to be logged\nconst data = `${timestamp}\\t${msg.topic}\\t${msg.payload}`;\n// replace the current payload with our new data\nmsg.payload = data;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 340,
+        "y": 460,
+        "wires": [
+            [
+                "5c3faa62.b5bc54",
+                "d9bf9576.f23d78"
+            ]
+        ]
+    },
+    {
+        "id": "5dabce56.2a8c5",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "",
+        "broker": "iotwork.shop",
+        "port": "8883",
+        "tls": "",
+        "clientid": "",
+        "usetls": true,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    }
+]
